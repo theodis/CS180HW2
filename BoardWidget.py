@@ -3,6 +3,8 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 from Game import Game
+from Minimax import miniMax
+from MorphEval import morphEval
 
 class BoardWidget(Gtk.DrawingArea):
     def __init__(self, game):
@@ -31,7 +33,7 @@ class BoardWidget(Gtk.DrawingArea):
 
         self.highlight = []
         self.arrow = []
-        
+
         self.sx = -1
         self.sy = -1
 
@@ -66,6 +68,7 @@ class BoardWidget(Gtk.DrawingArea):
                     self.highlight = []
                     self.queue_draw()
                     moved = True
+                    move = miniMax(self.game, morphEval, 3)
                     break
             if(moved != True):
                 moves = self.game.generateMoves()

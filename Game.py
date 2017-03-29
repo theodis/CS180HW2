@@ -2,6 +2,8 @@ class Game():
     def __init__(self):
         self.callback = []
         return
+    def copyGame(self):
+        pass
     def generateMoves(self):
         return []
     def boardState(self):
@@ -10,9 +12,14 @@ class Game():
         for f in self.callback:
             f(self, move)
         return
-
     def addMoveCallback(self, cb):
         self.callback.append(cb)
+    def eval(self):
+        return 0
+    def isGameOver(self):
+        return 0
+    def curentPlayer(self):
+        return 1
 
     @property
     def width(self):

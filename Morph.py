@@ -1,4 +1,6 @@
 from Game import Game
+from MorphEval import morphEval
+from Minimax import miniMax
 import copy
 
 class Morph(Game):
@@ -18,6 +20,18 @@ class Morph(Game):
         self.wking = True
         self.bking = True
         self.gameover = 0
+
+    def currentPlayer(self):
+        return self.curplayer
+
+    def copyGame(self):
+        ret = Morph(self)
+        ret.board = self.boardState()
+        ret.curplayer = self.curplayer
+        ret.wking = self.wking
+        ret.bking = self.bking
+        ret.gameover = self.gameover
+        return ret
 
     def isonboard(self, x, y):
         return x >= 0 and x < self.width and y >= 0 and y < self.height
