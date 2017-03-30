@@ -23,7 +23,7 @@ def miniMax(board, evalFunc, timelimit):
                 bestScore = score
                 bestMove = move
         if(time.clock() <= limit):
-            print(str(limit - time.clock()) + " " + str(maxdepth))
+            print(str(limit - time.clock()) + " " + str(bestScore) + " " + str(maxdepth))
             print(bestMove)
             globalBestMove = bestMove
             maxdepth += 1
