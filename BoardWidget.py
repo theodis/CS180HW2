@@ -62,13 +62,15 @@ class BoardWidget(Gtk.DrawingArea):
             for move in self.highlight:
                 if(move[0] == cx and move[1] == cy and (cx != self.sx or cy != self.sy)):
                     self.game.playMove([int(self.sx),int(self.sy),int(cx),int(cy)])
-                    self.board = self.game.boardState()
                     self.sx = -1
                     self.sy = -1
                     self.highlight = []
-                    self.queue_draw()
                     moved = True
                     move = miniMax(self.game, morphEval, 3)
+                    self.game.playMove(move)
+                    print("Played move " + str(move))
+                    self.board = self.game.boardState()
+                    self.queue_draw()
                     break
             if(moved != True):
                 moves = self.game.generateMoves()

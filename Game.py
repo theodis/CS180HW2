@@ -20,6 +20,8 @@ class Game():
         return 0
     def curentPlayer(self):
         return 1
+    def undoMove(self):
+        pass
 
     @property
     def width(self):

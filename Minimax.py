@@ -2,56 +2,44 @@ from Game import Game
 
 def miniMax(board, evalFunc, maxdepth):
     bestMove = None
-    bestScore = -1000000
+    bestScore = -1000001
     moves = board.generateMoves()
     for move in moves:
-        boardCopy = board.copyGame()
-        boardCopy.playMove(move)
-        score = minFunc(boardCopy, evalFunc, maxdepth)
+        print(move)
+        board.playMove(move)
+        score = miniMaxFunc(board, evalFunc, maxdepth, False)
+        print(score)
         if(score > bestScore):
             bestScore = score
             bestMove = move
+        board.undoMove()
+        print(bestMove)
     return bestMove
 
-def maxFunc(board, evalFunc, depthleft):
-    go = board.isGameOver()
+def miniMaxFunc(board, evalFunc, depthleft, ismax):
+    go = board.gameover
     cp = board.currentPlayer()
-    bestScore = -1000000
+    if(ismax):
+        bestScore = -1000000
+    else:
+        bestScore = 1000000
     bestMove = None
     if(go != 0 and go == cp):
-        return 1000000
+        return bestScore * -1
     elif(go != 0 and go != cp):
-        return -1000000
-    elif(depth <= 0):
-        return evalFunc(board)
+        return bestScore
+    elif(depthleft <= 0):
+        ret = evalFunc(board, board.currentPlayer())
+        return ret
 
     moves = board.generateMoves()
     for move in moves:
-        boardCopy = board.copyGame()
-        boardCopy.playMove(move)
-        score = minFunc(board, evalFunc, depthleft - 1)
-        if(score > bestScore):
+        board.playMove(move)
+        score = miniMaxFunc(board, evalFunc, depthleft - 1, not ismax)
+        if(
+            (ismax and score > bestScore) or
+            (not ismax and score < bestScore)
+            ):
             bestScore = score
-    return bestScore
-
-
-def minFunc(board, evalFunc, depthleft):
-    go = board.isGameOver()
-    cp = board.currentPlayer()
-    bestScore = 1000000
-    bestMove = None
-    if(go != 0 and go == cp):
-        return 1000000
-    elif(go != 0 and go != cp):
-        return -1000000
-    elif(depth <= 0):
-        return evalFunc(board)
-
-    moves = board.generateMoves()
-    for move in moves:
-        boardCopy = board.copyGame()
-        boardCopy.playMove(move)
-        score = maxFunc(board, evalFunc, depthleft - 1)
-        if(score < bestScore):
-            bestScore = score
+        board.undoMove()
     return bestScore

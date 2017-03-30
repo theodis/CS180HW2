@@ -6,6 +6,7 @@ import copy
 class Morph(Game):
     def __init__(self):
         super().__init__()
+
         self.board = [
             ['-','K','-','-','-','-'],
             ['N','B','R','R','B','N'],
@@ -16,6 +17,7 @@ class Morph(Game):
             ['n','b','r','r','b','n'],
             ['-','-','-','-','k','-']
         ]
+        self.history = []
         self.curplayer = 1
         self.wking = True
         self.bking = True
@@ -25,7 +27,7 @@ class Morph(Game):
         return self.curplayer
 
     def copyGame(self):
-        ret = Morph(self)
+        ret = Morph()
         ret.board = self.boardState()
         ret.curplayer = self.curplayer
         ret.wking = self.wking
@@ -203,9 +205,18 @@ class Morph(Game):
                     ret.extend(self.trace(x,y,0,-1,False,True))
 
         return ret
+    def undoMove(self):
+        self.board = self.history.pop()
+        self.curplayer = 2 - self.curplayer + 1
+        self.wking = True
+        self.bking = True
+        self.gameover = 0
+
     def boardState(self):
         return copy.deepcopy(self.board)
     def playMove(self, move):
+        self.history.append(self.board)
+        self.board = copy.deepcopy(self.board)
         sx = move[0]
         sy = move[1]
         ex = move[2]
