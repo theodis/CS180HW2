@@ -10,6 +10,9 @@ def miniMax(board, evalFunc, timelimit):
     moves = board.generateMoves()
     maxdepth = 1
     while True:
+        if(globalBestMove != None):
+            moves.remove(globalBestMove)
+            moves.insert(0,globalBestMove)
         for move in moves:
             board.playMove(move)
             score = miniMaxFunc(board, evalFunc, maxdepth, False, -1000000, 1000000)
