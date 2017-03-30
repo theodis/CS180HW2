@@ -35,6 +35,21 @@ class Morph(Game):
         ret.gameover = self.gameover
         return ret
 
+    def fromString(string, cp):
+        k = 0
+        self.wking = False
+        self.bking = False
+        for j in range(8):
+            for i in range(6):
+                self.board[j][i] = string[k]
+                if(string[k] == 'K'):
+                    self.bking = True
+                elif(string[k] == 'k'):
+                    self.wking = True
+                k += 1
+        self.curplayer = cp
+        self.gameover = self.isGameOver()
+
     def isonboard(self, x, y):
         return x >= 0 and x < self.width and y >= 0 and y < self.height
 
