@@ -7,7 +7,7 @@ def miniMax(board, evalFunc, maxdepth):
     for move in moves:
         print(move)
         board.playMove(move)
-        score = miniMaxFunc(board, evalFunc, maxdepth, False)
+        score = miniMaxFunc(board, evalFunc, maxdepth, False, -1000000, 1000000)
         print(score)
         if(score > bestScore):
             bestScore = score
@@ -16,7 +16,7 @@ def miniMax(board, evalFunc, maxdepth):
         print(bestMove)
     return bestMove
 
-def miniMaxFunc(board, evalFunc, depthleft, ismax):
+def miniMaxFunc(board, evalFunc, depthleft, ismax, alpha, beta):
     go = board.gameover
     cp = board.currentPlayer()
     if(ismax):
@@ -35,11 +35,14 @@ def miniMaxFunc(board, evalFunc, depthleft, ismax):
     moves = board.generateMoves()
     for move in moves:
         board.playMove(move)
-        score = miniMaxFunc(board, evalFunc, depthleft - 1, not ismax)
-        if(
-            (ismax and score > bestScore) or
-            (not ismax and score < bestScore)
-            ):
-            bestScore = score
+        score = miniMaxFunc(board, evalFunc, depthleft - 1, not ismax, alpha, beta)
         board.undoMove()
+        if(ismax):
+            bestScore = max(bestScore, score)
+            alpha = max(alpha, bestScore)
+        else:
+            bestScore = min(bestScore, score)
+            beta = min(beta, bestScore)
+        if(beta <= alpha):
+            break
     return bestScore
