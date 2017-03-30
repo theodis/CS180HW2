@@ -1,22 +1,37 @@
 from Game import Game
+import time
 
-def miniMax(board, evalFunc, maxdepth):
+def miniMax(board, evalFunc, timelimit):
+    global limit
+    limit = time.clock() + timelimit
+    globalBestMove = None
     bestMove = None
     bestScore = -1000001
     moves = board.generateMoves()
-    for move in moves:
-        print(move)
-        board.playMove(move)
-        score = miniMaxFunc(board, evalFunc, maxdepth, False, -1000000, 1000000)
-        print(score)
-        if(score > bestScore):
-            bestScore = score
-            bestMove = move
-        board.undoMove()
-        print(bestMove)
-    return bestMove
+    maxdepth = 1
+    while True:
+        for move in moves:
+            board.playMove(move)
+            score = miniMaxFunc(board, evalFunc, maxdepth, False, -1000000, 1000000)
+            board.undoMove()
+            if(time.clock() > limit):
+                break
+            if(score > bestScore):
+                bestScore = score
+                bestMove = move
+        if(time.clock() <= limit):
+            print(str(limit - time.clock()) + " " + str(maxdepth))
+            print(bestMove)
+            globalBestMove = bestMove
+            maxdepth += 1
+        else:
+            break
+    return globalBestMove
 
 def miniMaxFunc(board, evalFunc, depthleft, ismax, alpha, beta):
+    global limit
+    if(time.clock() > limit):
+        return 0
     go = board.gameover
     cp = board.currentPlayer()
     if(ismax):
