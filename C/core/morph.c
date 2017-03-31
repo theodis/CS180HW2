@@ -37,7 +37,6 @@ int evalWeights[2][14][8][6];
 void morphInit(morph* ret, char* boardState, int player) {
 	ret->turn = 0;
 	ret->curPlayer = player;
-	ret->previousMove = NULL;
 
 	if(!boardState) boardState = "-K----NBRRBN--PP----------------pp--nbrrbn----k-";
 	for(int i = 0; i < 8 * 6; i++){
@@ -162,11 +161,11 @@ void morphLoadWeights(char* file) {
 	}
 }
 
-int morphEval(morph* m) {
+int morphEval(morph* m, int ep) {
 	int ret = 0;
 	for(int j = 0; j < 8; j++)
 		for(int i = 0; i < 6; i++)
-			ret += evalWeights[m->curPlayer][m->board[m->turn][j][i]][j][i];
+			ret += evalWeights[ep][m->board[m->turn][j][i]][j][i];
 	return ret;
 }
 
@@ -220,37 +219,34 @@ void morphUndoMove(morph* m) {
 	m->curPlayer = m->curPlayer ? 0 : 1;
 }
 
-void morphAddMove(morph* m, heap* h, int max, int move) {
+void morphAddMove(morph* m, heap* h, int max, int move, int ep) {
 	if(max == -1){
 		heapInsertMax(h, 0, move);
 	} else {
 		morphPlayMove(m, move);
-		int key = morphEval(m);
+		int key = morphEval(m, ep);
 		morphUndoMove(m);
 		if(max) heapInsertMax(h, key, move);
 		else heapInsertMin(h, key, move);
 	}
 }
 
-
-
-
-void morphMove(morph* m, heap* h, int max, int x1, int y1, int x2, int y2) {
+void morphMove(morph* m, heap* h, int max, int x1, int y1, int x2, int y2, int ep) {
 	if(CANMOVE(m,x2,y2)) 
-		morphAddMove(m,h,max,PACKMOVE(x1,y1,x2,y2));
+		morphAddMove(m,h,max,PACKMOVE(x1,y1,x2,y2), ep);
 }
 
-void morphAttack(morph* m, heap* h, int max, int x1, int y1, int x2, int y2) {
+void morphAttack(morph* m, heap* h, int max, int x1, int y1, int x2, int y2, int ep) {
 	if(CANATTACK(m,x1,y1,x2,y2))
-		morphAddMove(m,h,max,PACKMOVE(x1,y1,x2,y2));
+		morphAddMove(m,h,max,PACKMOVE(x1,y1,x2,y2), ep);
 }
 
-void morphMoveOrAttack(morph* m, heap* h, int max, int x1, int y1, int x2, int y2) {
+void morphMoveOrAttack(morph* m, heap* h, int max, int x1, int y1, int x2, int y2, int ep) {
 	if(CANMOVEORATTACK(m,x1,y1,x2,y2))
-		morphAddMove(m,h,max,PACKMOVE(x1,y1,x2,y2));
+		morphAddMove(m,h,max,PACKMOVE(x1,y1,x2,y2), ep);
 }
 
-void morphTrace(morph* m, heap* h, int max, int x, int y, int dx, int dy, int move, int attack) {
+void morphTrace(morph* m, heap* h, int max, int x, int y, int dx, int dy, int move, int attack, int ep) {
 	int sp = OWNERSHIP(m,x,y);
 	int cx = x + dx;
 	int cy = y + dy;
@@ -258,15 +254,17 @@ void morphTrace(morph* m, heap* h, int max, int x, int y, int dx, int dy, int mo
 		int cp = OWNERSHIP(m,cx,cy);
 		if(sp == cp) break;
 		else if(move && CANMOVE(m,cx,cy))
-			morphAddMove(m,h,max,PACKMOVE(x,y,cx,cy));
-		else if(attack && CANATTACK(m,x,y,cx,cy))
-			morphAddMove(m,h,max,PACKMOVE(x,y,cx,cy));
+			morphAddMove(m,h,max,PACKMOVE(x,y,cx,cy), ep);
+		else if(attack && CANATTACK(m,x,y,cx,cy)){
+			morphAddMove(m,h,max,PACKMOVE(x,y,cx,cy), ep);
+			break;
+		}
 		cx += dx;
 		cy += dy;
 	}
 }
 
-void morphGenMoves(morph* m, heap* h, int max) {
+void morphGenMoves(morph* m, heap* h, int max, int ep) {
 	int piece;
 
 	//Clear the heap if for some reason it wasn't empty
@@ -288,66 +286,66 @@ void morphGenMoves(morph* m, heap* h, int max) {
 				continue;
 			switch(piece) {
 				case W_PAWN:
-					morphMove(m,h,max,i,j,i,j-1);
-					morphAttack(m,h,max,i,j,i-1,j-1);
-					morphAttack(m,h,max,i,j,i+1,j-1);
+					morphMove(m,h,max,i,j,i,j-1,ep);
+					morphAttack(m,h,max,i,j,i-1,j-1,ep);
+					morphAttack(m,h,max,i,j,i+1,j-1,ep);
 					break;
 				case B_PAWN:
-					morphMove(m,h,max,i,j,i,j+1);
-					morphAttack(m,h,max,i,j,i-1,j+1);
-					morphAttack(m,h,max,i,j,i+1,j+1);
+					morphMove(m,h,max,i,j,i,j+1,ep);
+					morphAttack(m,h,max,i,j,i-1,j+1,ep);
+					morphAttack(m,h,max,i,j,i+1,j+1,ep);
 					break;
 				case W_KING:
-					morphMoveOrAttack(m,h,max,i,j,i-1,j);
-					morphAttack(m,h,max,i,j,i+1,j);
+					morphMoveOrAttack(m,h,max,i,j,i-1,j,ep);
+					morphAttack(m,h,max,i,j,i+1,j,ep);
 					break;
 				case B_KING:
-					morphMoveOrAttack(m,h,max,i,j,i+1,j);
-					morphAttack(m,h,max,i,j,i-1,j);
+					morphMoveOrAttack(m,h,max,i,j,i+1,j,ep);
+					morphAttack(m,h,max,i,j,i-1,j,ep);
 					break;
 				case W_KNIGHT:
-					morphMoveOrAttack(m,h,max,i,j,i-1,j-2);
-					morphAttack(m,h,max,i,j,i-1,j+2);
-					morphMoveOrAttack(m,h,max,i,j,i+1,j-2);
-					morphAttack(m,h,max,i,j,i+1,j+2);
-					morphMoveOrAttack(m,h,max,i,j,i-2,j-1);
-					morphAttack(m,h,max,i,j,i-2,j+1);
-					morphMoveOrAttack(m,h,max,i,j,i+2,j-1);
-					morphAttack(m,h,max,i,j,i+2,j+1);
+					morphMoveOrAttack(m,h,max,i,j,i-1,j-2,ep);
+					morphAttack(m,h,max,i,j,i-1,j+2,ep);
+					morphMoveOrAttack(m,h,max,i,j,i+1,j-2,ep);
+					morphAttack(m,h,max,i,j,i+1,j+2,ep);
+					morphMoveOrAttack(m,h,max,i,j,i-2,j-1,ep);
+					morphAttack(m,h,max,i,j,i-2,j+1,ep);
+					morphMoveOrAttack(m,h,max,i,j,i+2,j-1,ep);
+					morphAttack(m,h,max,i,j,i+2,j+1,ep);
 					break;
 				case B_KNIGHT:
-					morphAttack(m,h,max,i,j,i-1,j-2);
-					morphMoveOrAttack(m,h,max,i,j,i-1,j+2);
-					morphAttack(m,h,max,i,j,i+1,j-2);
-					morphMoveOrAttack(m,h,max,i,j,i+1,j+2);
-					morphAttack(m,h,max,i,j,i-2,j-1);
-					morphMoveOrAttack(m,h,max,i,j,i-2,j+1);
-					morphAttack(m,h,max,i,j,i+2,j-1);
-					morphMoveOrAttack(m,h,max,i,j,i+2,j+1);
+					morphAttack(m,h,max,i,j,i-1,j-2,ep);
+					morphMoveOrAttack(m,h,max,i,j,i-1,j+2,ep);
+					morphAttack(m,h,max,i,j,i+1,j-2,ep);
+					morphMoveOrAttack(m,h,max,i,j,i+1,j+2,ep);
+					morphAttack(m,h,max,i,j,i-2,j-1,ep);
+					morphMoveOrAttack(m,h,max,i,j,i-2,j+1,ep);
+					morphAttack(m,h,max,i,j,i+2,j-1,ep);
+					morphMoveOrAttack(m,h,max,i,j,i+2,j+1,ep);
 					break;
 				case W_BISHOP:
-					morphTrace(m,h,max,i,j,-1,-1,1,1);
-					morphTrace(m,h,max,i,j,1,-1,1,1);
-					morphTrace(m,h,max,i,j,-1,1,0,1);
-					morphTrace(m,h,max,i,j,1,1,0,1);
+					morphTrace(m,h,max,i,j,-1,-1,1,1,ep);
+					morphTrace(m,h,max,i,j,1,-1,1,1,ep);
+					morphTrace(m,h,max,i,j,-1,1,0,1,ep);
+					morphTrace(m,h,max,i,j,1,1,0,1,ep);
 					break;
 				case B_BISHOP:
-					morphTrace(m,h,max,i,j,-1,1,1,1);
-					morphTrace(m,h,max,i,j,1,1,1,1);
-					morphTrace(m,h,max,i,j,-1,-1,0,1);
-					morphTrace(m,h,max,i,j,1,-1,0,1);
+					morphTrace(m,h,max,i,j,-1,1,1,1,ep);
+					morphTrace(m,h,max,i,j,1,1,1,1,ep);
+					morphTrace(m,h,max,i,j,-1,-1,0,1,ep);
+					morphTrace(m,h,max,i,j,1,-1,0,1,ep);
 					break;
 				case W_ROOK:
-					morphTrace(m,h,max,i,j,0,-1,1,1);
-					morphTrace(m,h,max,i,j,-1,0,1,1);
-					morphTrace(m,h,max,i,j,1,0,1,1);
-					morphTrace(m,h,max,i,j,0,1,0,1);
+					morphTrace(m,h,max,i,j,0,-1,1,1,ep);
+					morphTrace(m,h,max,i,j,-1,0,1,1,ep);
+					morphTrace(m,h,max,i,j,1,0,1,1,ep);
+					morphTrace(m,h,max,i,j,0,1,0,1,ep);
 					break;
 				case B_ROOK:
-					morphTrace(m,h,max,i,j,0,1,1,1);
-					morphTrace(m,h,max,i,j,-1,0,1,1);
-					morphTrace(m,h,max,i,j,1,0,1,1);
-					morphTrace(m,h,max,i,j,0,-1,0,1);
+					morphTrace(m,h,max,i,j,0,1,1,1,ep);
+					morphTrace(m,h,max,i,j,-1,0,1,1,ep);
+					morphTrace(m,h,max,i,j,1,0,1,1,ep);
+					morphTrace(m,h,max,i,j,0,-1,0,1,ep);
 					break;
 			}
 		}

@@ -13,12 +13,10 @@
 #define WIN	 1000000000
 #define LOSE	-1000000000
 
-typedef struct morph morph;
 typedef struct morph {
 	int curPlayer;
 	int board[MAX_MOVES][8][6];
 	int turn;
-	morph* previousMove;
 } morph;
 
 
@@ -26,12 +24,12 @@ void morphInit(morph* m, char* boardState, int player);
 void morphPrint(morph* board);
 void morphPrintString(morph* m);
 void morphLoadWeights(char* file);
-int morphEval(morph* m);
+int morphEval(morph* m, int ep);
 int morphHasBlackKing(morph* m);
 int morphHasWhiteKing(morph* m);
 void morphPlayMove(morph* m, int move);
 void morphUndoMove(morph* m);
-void morphGenMoves(morph* m, heap* h, int max);
+void morphGenMoves(morph* m, heap* h, int max, int ep);
 void morphMoveString(char* buffer, int move, int reverse);
 
 #endif

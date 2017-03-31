@@ -66,9 +66,9 @@ class BoardWidget(Gtk.DrawingArea):
                     self.sy = -1
                     self.highlight = []
                     moved = True
-                    move = miniMax(self.game, morphEval, 15)
-                    self.game.playMove(move)
-                    print("Played move " + str(move))
+                    #move = miniMax(self.game, morphEval, 15)
+                    #self.game.playMove(move)
+                    #print("Played move " + str(move))
                     self.board = self.game.boardState()
                     self.queue_draw()
                     break
