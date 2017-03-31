@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 from Classes.Morph import Morph
 import gi
 gi.require_version('Gtk', '3.0')

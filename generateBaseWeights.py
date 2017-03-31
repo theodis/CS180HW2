@@ -16,7 +16,7 @@ pieceMap = {
 
 pieceOrder = ['-','K','N','B','R','P','k','n','b','r','p']
 
-output = ""
+output = "00000000"
 for piece in pieceOrder:
     for j in range(8):
         for i in range(6):
