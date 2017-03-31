@@ -2,9 +2,9 @@ import math
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
-from Game import Game
-from Minimax import miniMax
-from MorphEval import morphEval
+from Classes.Game import Game
+from Classes.Minimax import miniMax
+from Classes.MorphEval import morphEval
 
 class BoardWidget(Gtk.DrawingArea):
     def __init__(self, game):

@@ -1,4 +1,4 @@
-from Game import Game
+from Classes.Game import Game
 import time
 
 def miniMax(board, evalFunc, timelimit):

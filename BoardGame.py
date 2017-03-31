@@ -1,11 +1,11 @@
-#!/usr/bin/python
-from Morph import Morph
+#!/usr/bin/python2
+from Classes.Morph import Morph
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-from BoardWidget import *
-from MoveListWidget import MoveListWidget
-from MoveHistoryWidget import MoveHistoryWidget
+from Classes.BoardWidget import *
+from Classes.MoveListWidget import MoveListWidget
+from Classes.MoveHistoryWidget import MoveHistoryWidget
 
 def playedMove(game, move):
     moveList.update()

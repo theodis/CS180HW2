@@ -1,6 +1,6 @@
-from Game import Game
-from MorphEval import morphEval
-from Minimax import miniMax
+from Classes.Game import Game
+from Classes.MorphEval import morphEval
+from Classes.Minimax import miniMax
 import copy
 
 class Morph(Game):

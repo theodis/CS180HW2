@@ -2,7 +2,7 @@ import math
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
-from Game import Game
+from Classes.Game import Game
 
 #class MoveHistoryWidget(Gtk.ListBox):
 #    def __init__(self):
