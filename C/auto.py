@@ -3,6 +3,7 @@ from shell import *
 import sys
 
 board = "-K----NBRRBN--PP----------------pp--nbrrbn----k-"
+player = 1
 weights1 = sys.argv[1]
 weights2 = sys.argv[2]
 limit = float(sys.argv[3])
