@@ -109,6 +109,8 @@ int miniMax(double timelimit){
  * Arg 1 - Player number (1 or 2)
  * Arg 2 - Weights file
  * Arg 3 - Runtime limit (in seconds)
+ * StdIn - Board
+ * StdOut - Move
  */
 
 int main(int argc, char* argv[]) {

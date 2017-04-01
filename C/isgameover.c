@@ -4,31 +4,34 @@
 
 /*
  * Arg 1 - Player number (1 or 2)
- * Arg 2 - Player move
  * StdIn - Board
- * StdOut - 1 for good, 0 for bad
+ * StdOut - 0 for no winner, 1 for player 1 win, 2 for player 2 win
  */
 
 morph m;
 heap h;
 
 int main(int argc, char* argv[]) {
-	if(argc != 3) return 0;
+	if(argc != 2) return 0;
 
 	int player = argv[1][0] - '1';
-	int k,v;
-	char* moveStr = argv[2];
+	int otherplayer = 2 - player + 1;
 	char boardStr[50];
 
-	int move = morphMoveStringToMove(moveStr);
 	scanf("%s",boardStr);
 	morphInit(&m, boardStr, player);
 	morphGenMoves(&m, &h, -1, player);
-	for(int i = 0; i < h.count; i++) {
-		if(h.value[i] == move) {
-			printf("1");
-			return 0;
-		}
+	if(!morphHasBlackKing(&m)){
+		printf("1");
+		return 0;
+	}
+	if(!morphHasWhiteKing(&m)){
+		printf("2");
+		return 0;
+	}
+	if(!h.count){
+		printf("%i", otherplayer);
+		return 0;
 	}
 	printf("0");
 	return 0;

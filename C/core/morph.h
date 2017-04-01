@@ -31,5 +31,6 @@ void morphPlayMove(morph* m, int move);
 void morphUndoMove(morph* m);
 void morphGenMoves(morph* m, heap* h, int max, int ep);
 void morphMoveString(char* buffer, int move, int reverse);
+int morphMoveStringToMove(char* moveStr);
 
 #endif

@@ -372,3 +372,12 @@ void morphMoveString(char* buffer, int move, int reverse){
 	buffer[3] = y2 + '1';
 	buffer[4] = 0;
 }
+
+int morphMoveStringToMove(char* moveStr){
+	int x1 = moveStr[0] - 'A';
+	int y1 = 7 - (moveStr[1] - '1');
+	int x2 = moveStr[2] - 'A';
+	int y2 = 7 - (moveStr[3] - '1');
+
+	return PACKMOVE(x1,y1,x2,y2);
+}
