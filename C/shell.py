@@ -27,3 +27,11 @@ def validateMove(board, player, move):
     p = Popen(['./validatemove',str(player), move], stdout=PIPE, stdin=PIPE)
     stdout_data = p.communicate(input=board)[0]
     return stdout_data == "1"
+
+def flipMove(move):
+    ret = ""
+    ret += chr(5 - (ord(move[0]) - ord('A')) + ord('A'))
+    ret += chr(7 - (ord(move[1]) - ord('1')) + ord('1'))
+    ret += chr(5 - (ord(move[2]) - ord('A')) + ord('A'))
+    ret += chr(7 - (ord(move[3]) - ord('1')) + ord('1'))
+    return ret

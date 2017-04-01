@@ -12,7 +12,7 @@ while(True):
     move = ""
     if(player == 1): #Human's turn
         while(not validateMove(board, player, move)):
-            move = raw_input("> ");
+            move = raw_input("> ").upper();
             if(not validateMove(board, player, move)):
                 print("Invalid move")
     else: #Computer's turn
@@ -20,7 +20,7 @@ while(True):
         if(not validateMove(board, player, move)):
             print("Computer tried to play an illegal move!")
             break
-        print("Computer plays move: " + move)
+        print("Computer plays move: " + move + " (" + flipMove(move) + ")")
     board = playMove(board, player, move)
     player = 2 - player + 1 #Alternate player
     if(isGameOver(board,player) != 0):
