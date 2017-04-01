@@ -8,6 +8,8 @@
 #define	MAX(X,Y) ( (X) > (Y) ? (X) : (Y) )
 #define	MIN(X,Y) ( (X) < (Y) ? (X) : (Y) )
 
+//#define SHOWWORK
+
 void printHeap(heap* h){
 	for(int i = 0; i < h->count; i++)
 		printf("%i ", h->key[i]);
@@ -87,9 +89,11 @@ int miniMax(double timelimit){
 		}
 		if(clock() <= limit){
 			//Still time left
+			#ifdef SHOWWORK
 			char move[5];
 			morphMoveString(move, bestMove, 0);
 			fprintf(stderr, "%i - %f - %i %s\n", maxDepth, (limit - clock()) / (double)CLOCKS_PER_SEC, bestScore, move);
+			#endif
 			if(bestScore == LOSE || bestScore == WIN)
 				return bestMove;
 			globalBestMove = bestMove;
@@ -101,6 +105,12 @@ int miniMax(double timelimit){
 	return globalBestMove;
 }
 
+/*
+ * Arg 1 - Player number (1 or 2)
+ * Arg 2 - Weights file
+ * Arg 3 - Runtime limit (in seconds)
+ */
+
 int main(int argc, char* argv[]) {
 	if(argc != 4) return 0;
 
@@ -108,31 +118,16 @@ int main(int argc, char* argv[]) {
 	char* evalFile = argv[2];
 	double runtime = atof(argv[3]);
 	char moveStr[5];
-	char moveStrRev[5];
-	heap movesCheck;
-
-	int k,v;
+	char boardStr[50];
 
 	morphLoadWeights(evalFile);
-	morphInit(&m, NULL, player);
-	morphPrint(&m);
 
-	while(1){
-		morphGenMoves(&m, &movesCheck, -1, player);
-		if(movesCheck.count == 0) break;
-		while(movesCheck.count){
-			heapRemoveMax(&movesCheck,&k,&v,0);
-			morphMoveString(moveStr, v, 0);
-			fprintf(stderr,"%s ", moveStr);
-		}
-		fprintf(stderr,"\n");
-    		int move = miniMax(runtime);
-		morphMoveString(moveStr, move, 0);
-		morphMoveString(moveStrRev, move, 1);
-		printf("%i %s (%s)\n", movesCheck.count, moveStr, moveStrRev);
-		morphPlayMove(&m, move);
-		morphPrint(&m);
-	}
+	scanf("%s",boardStr);
+	morphInit(&m, boardStr, player);
+
+    	int move = miniMax(runtime);
+	morphMoveString(moveStr, move, 0);
+	printf("%s", moveStr);
 
 	return 0;
 }
