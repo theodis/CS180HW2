@@ -8,7 +8,7 @@
 #define	MAX(X,Y) ( (X) > (Y) ? (X) : (Y) )
 #define	MIN(X,Y) ( (X) < (Y) ? (X) : (Y) )
 
-//#define SHOWWORK
+#define SHOWWORK
 
 void printHeap(heap* h){
 	for(int i = 0; i < h->count; i++)
@@ -25,7 +25,7 @@ int miniMaxFunc(int eval, int depth, int maxDepth, int isMax, int alpha, int bet
 	int bestScore, bestMove, k, v, score;
 	if(isMax) bestScore = LOSE; else bestScore = WIN;
 
-	morphGenMoves(&m, &moves[depth], isMax, ep);
+	morphGenMoves(&m, &moves[depth], depth <= maxDepth ? isMax : -1, ep);
 	//If the other player has no king and it's maxing then it's
 	//a win
 	if(	(m.curPlayer == 0 && !morphHasBlackKing(&m)) ||

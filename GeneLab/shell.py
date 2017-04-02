@@ -1,1 +1,1 @@
-../C/shell.py
+../Minimax/shell.py
