@@ -8,7 +8,7 @@
 #define	MAX(X,Y) ( (X) > (Y) ? (X) : (Y) )
 #define	MIN(X,Y) ( (X) < (Y) ? (X) : (Y) )
 
-#define SHOWWORK
+//#define SHOWWORK
 
 void printHeap(heap* h){
 	for(int i = 0; i < h->count; i++)
@@ -60,12 +60,14 @@ int miniMaxFunc(int eval, int depth, int maxDepth, int isMax, int alpha, int bet
 int miniMax(double timelimit){
 	limit = (clock_t)(clock() + timelimit * CLOCKS_PER_SEC);
 	int globalBestMove = -1;
-	int bestMove = -1;
-	int bestScore = LOSE - 1;
+	int bestMove;
+	int bestScore;
 	int maxDepth = 1;
 	int k,v,score;
 	int player = m.curPlayer;
 	while(1) {
+		bestMove = -1;
+		bestScore = LOSE - 1;
 		morphGenMoves(&m, &moves[0], 1, player);
 		if(globalBestMove != -1){ //Move the best move to the front
 			for(int i = 0; i < moves[0].count; i++){
@@ -94,8 +96,10 @@ int miniMax(double timelimit){
 			morphMoveString(move, bestMove, 0);
 			fprintf(stderr, "%i - %f - %i %s\n", maxDepth, (limit - clock()) / (double)CLOCKS_PER_SEC, bestScore, move);
 			#endif
-			if(bestScore == LOSE || bestScore == WIN)
+			if(bestScore == WIN)
 				return bestMove;
+			else if(bestScore == LOSE)
+				return globalBestMove == -1 ? bestMove : globalBestMove;
 			globalBestMove = bestMove;
 			maxDepth++;
 		} else {
